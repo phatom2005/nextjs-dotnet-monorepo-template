@@ -19,10 +19,10 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore backend/ProjectTemplate-WebApp/ProjectTemplate-WebApp/ProjectTemplate-WebApp.csproj
+        run: dotnet restore project/backend/ProjectTemplate-WebApp/ProjectTemplate-WebApp/ProjectTemplate-WebApp.csproj
 
       - name: Build Backend
-        run: dotnet build backend/ProjectTemplate-WebApp/ProjectTemplate-WebApp/ProjectTemplate-WebApp.csproj --no-restore
+        run: dotnet build project/backend/ProjectTemplate-WebApp/ProjectTemplate-WebApp/ProjectTemplate-WebApp.csproj --no-restore
 
   # --- KIỂM TRA FRONTEND (Next.js) ---
   frontend-ci:
@@ -38,10 +38,10 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: cd frontend && npm ci
+        run: cd project/frontend && npm ci
 
       - name: Build Frontend
-        run: cd frontend && npm run build
+        run: cd project/frontend && npm run build
 
   # --- QUÉT BẢO MẬT (SNYK) ---
   security-scan:
@@ -50,6 +50,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/dotnet@master
+        uses: snyk/actions/node@master # Dùng bản node để quét cả npm và dự án nói chung
+        with:
+          args: --all-projects # <--- Quét toàn bộ project con
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
