@@ -1,0 +1,55 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ] # Chạy khi có code mới đẩy vào nhánh main
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # --- KIỂM TRA BACKEND (.NET) ---
+  backend-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore backend/ProjectTemplate-WebApp/ProjectTemplate-WebApp/ProjectTemplate-WebApp.csproj
+
+      - name: Build Backend
+        run: dotnet build backend/ProjectTemplate-WebApp/ProjectTemplate-WebApp/ProjectTemplate-WebApp.csproj --no-restore
+
+  # --- KIỂM TRA FRONTEND (Next.js) ---
+  frontend-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: cd frontend && npm ci
+
+      - name: Build Frontend
+        run: cd frontend && npm run build
+
+  # --- QUÉT BẢO MẬT (SNYK) ---
+  security-scan:
+    needs: [backend-ci, frontend-ci]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/dotnet@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

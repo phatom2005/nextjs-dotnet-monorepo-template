@@ -1,2 +1,10 @@
-# nextjs-dotnet-monorepo-template
-A production-ready Monorepo template featuring Next.js 15, .NET 9 Web API, and PostgreSQL. Fully dockerized with GitHub Actions CI/CD and Snyk security scanning.
+# Full-Stack Monorepo Template
+
+> **Lean, Secure, and Scalable.** > Một bộ khung dự án của **Next.js** và **.NET 9**.
+
+### Tech Stack
+- **Frontend:** Next.js 15 (App Router, Tailwind CSS)
+- **Backend:** .NET 9 Web API (Entity Framework Core)
+- **Database:** PostgreSQL
+- **DevOps:** Docker, Docker Compose, GitHub Actions
+- **Security:** Snyk Security Scanning
