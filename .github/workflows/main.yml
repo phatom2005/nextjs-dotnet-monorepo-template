@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # --- KIỂM TRA BACKEND ---
+  # --- JOB 1: KIỂM TRA BACKEND (.NET) ---
   backend-ci:
     runs-on: ubuntu-latest
     steps:
@@ -16,10 +16,10 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-      - name: Build
+      - name: Build Backend
         run: dotnet build project/backend/ProjectTemplate-WebApp/ProjectTemplate-WebApp.sln
 
-  # --- KIỂM TRA FRONTEND ---
+  # --- JOB 2: KIỂM TRA FRONTEND (Next.js) ---
   frontend-ci:
     runs-on: ubuntu-latest
     steps:
@@ -28,32 +28,33 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Build
+          cache: 'npm'
+          cache-dependency-path: project/frontend/package-lock.json 
+      - name: Build Frontend
         run: |
           cd project/frontend
           npm ci
           npm run build
 
-  # --- QUÉT BẢO MẬT (SNYK) ---
+  # --- JOB 3: QUÉT BẢO MẬT (SNYK) ---
   security-scan:
     needs: [backend-ci, frontend-ci]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run Snyk
-        uses: snyk/actions/node@master
-        with:
-          args: --all-projects
+      - name: Install Snyk CLI
+        uses: snyk/actions/setup@master # <-- Dùng bản setup để quét đa ngôn ngữ
+      - name: Run Snyk Scan
+        run: snyk test --all-projects # <-- Quét toàn bộ project con trong folder project
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-  # --- ĐÓNG GÓI & ĐẨY LÊN DOCKER HUB (CD) ---
+  # --- JOB 4: ĐÓNG GÓI & ĐẨY LÊN DOCKER HUB (CD) ---
   build-and-push:
     needs: [security-scan]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -63,7 +64,9 @@ jobs:
       - name: Build & Push Backend
         uses: docker/build-push-action@v5
         with:
-          context: ./project/backend/ProjectTemplate-WebApp/ProjectTemplate-WebApp
+          # Context để ở Solution level để Docker thấy file .sln
+          context: ./project/backend/ProjectTemplate-WebApp 
+          file: ./project/backend/ProjectTemplate-WebApp/ProjectTemplate-WebApp/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-backend:latest
 
