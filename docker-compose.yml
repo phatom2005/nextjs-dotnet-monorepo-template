@@ -20,7 +20,7 @@ services:
   # ---------------------------------------------
   backend:
     build:
-      context: ./backend                      # Trỏ vào thư mục backend
+      context: ./project/backend                      # Trỏ vào thư mục backend
       dockerfile: ProjectTemplate-WebApp/ProjectTemplate-WebApp/Dockerfile # ĐƯỜNG DẪN NÀY QUAN TRỌNG: Sửa lại theo tên project API của bạn
     container_name: my_dotnet_api
     restart: always
@@ -38,7 +38,7 @@ services:
   # ---------------------------------------------
   frontend:
     build:
-      context: ./frontend
+      context: ./project/frontend
       dockerfile: Dockerfile
     container_name: my_nextjs_frontend
     restart: always
