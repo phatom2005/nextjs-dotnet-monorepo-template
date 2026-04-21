@@ -1,7 +1,7 @@
 # Full-Stack Monorepo Template
 
 [![CI/CD Pipeline](https://github.com/phatom2005/nextjs-dotnet-monorepo-template/actions/workflows/main.yml/badge.svg)](https://github.com/phatom2005/nextjs-dotnet-monorepo-template/actions)
-[![CodeQL](https://github.com/phatom2005/nextjs-dotnet-monorepo-template/actions/workflows/codeql.yml/badge.svg)](https://github.com/phatom2005/nextjs-dotnet-monorepo-template/security/code-scanning)
+[![CodeQL](https://github.com/phatom2005/nextjs-dotnet-monorepo-template/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/phatom2005/nextjs-dotnet-monorepo-template/actions/workflows/github-code-scanning/codeql)
 ![Security Status](https://img.shields.io/badge/Security-Snyk_Protected-blueviolet?logo=snyk)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
