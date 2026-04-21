@@ -4,7 +4,6 @@ services:
   # ---------------------------------------------
   db:
     image: postgres:15-alpine
-    container_name: my_postgres_db
     restart: always
     environment:
       POSTGRES_USER: admin
@@ -14,18 +13,24 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d MyProjectDb" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   # ---------------------------------------------
   # 2. BACKEND (.NET API)
   # ---------------------------------------------
   backend:
     build:
-      context: ./project/backend                      # Trỏ vào thư mục backend
+      context: ./project/backend # Trỏ vào thư mục backend
       dockerfile: ProjectTemplate-WebApp/ProjectTemplate-WebApp/Dockerfile # ĐƯỜNG DẪN NÀY QUAN TRỌNG: Sửa lại theo tên project API của bạn
     container_name: my_dotnet_api
     restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "5000:8080" # Cổng 8080 là mặc định của .NET 8 trong Docker
     environment:
@@ -43,12 +48,13 @@ services:
     container_name: my_nextjs_frontend
     restart: always
     depends_on:
-      - backend
+      backend:
+        condition: service_started
     ports:
       - "3000:3000"
     environment:
       # Báo cho Next.js biết Backend nằm ở đâu (gọi qua local host vì Next.js chạy cả phía client)
-      - NEXT_PUBLIC_API_URL=http://localhost:5000 
+      - NEXT_PUBLIC_API_URL=http://localhost:5000
 
 # Lưu lại dữ liệu Database để không mất khi tắt Docker
 volumes:
