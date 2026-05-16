@@ -37,6 +37,7 @@ jobs:
       - name: Build Frontend
         run: |
           cd project/frontend
+          rm -f package-lock.json
           npm install
           npm run build
 
