@@ -12,16 +12,14 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ProjectTemplate-WebApp/ProjectTemplate-WebApp/ProjectTemplate-WebApp.csproj", "ProjectTemplate-WebApp/"]
-RUN dotnet restore "./ProjectTemplate-WebApp/ProjectTemplate-WebApp.csproj"
+COPY ["ProjectTemplate-WebApp.csproj", "."]
+RUN dotnet restore "./ProjectTemplate-WebApp.csproj"
 COPY . .
-WORKDIR "/src/ProjectTemplate-WebApp/ProjectTemplate-WebApp"
 RUN dotnet build "./ProjectTemplate-WebApp.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-WORKDIR "/src/ProjectTemplate-WebApp/ProjectTemplate-WebApp"
 RUN dotnet publish "./ProjectTemplate-WebApp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ProjectTemplate_WebApp.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,7 +30,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 
 // 3. CẤU HÌNH SWAGGER
 builder.Services.AddEndpointsApiExplorer();
@@ -57,7 +57,6 @@ using (var scope = app.Services.CreateScope())
 // 5. PIPELINE CẤU HÌNH
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
@@ -66,7 +65,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 // app.UseHttpsRedirection(); // Tắt để tránh lỗi Port trong Docker Local
-app.UseStaticFiles();
 
 app.UseRouting();
 // Kích hoạt CORS (Phải nằm sau UseRouting và trước UseAuthorization)
@@ -74,8 +72,6 @@ app.UseCors("DefaultPolicy");
 
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllers();
 
 app.Run();
