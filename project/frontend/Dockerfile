@@ -2,14 +2,14 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN rm -f package-lock.json && npm install
 COPY . .
 RUN npm run build
 
 # --- STAGE 2: Production ---
 FROM node:20-alpine AS runner
 WORKDIR /app
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 # Copy thư mục standalone và static để chạy ứng dụng
 COPY --from=builder /app/public ./public
